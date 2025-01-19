@@ -1,5 +1,6 @@
 import React, {useRef, useState, useEffect} from "react";
 import io from 'socket.io-client'
+import { Link } from "react-router-dom";
 
 import { GoPaperAirplane } from "react-icons/go";
 
@@ -108,8 +109,9 @@ export default function Chat({}) {
     return (
         <div className='flex flex-col w-full h-screen'>
             <div className="w-full bg-gray-100 border-b-2 border-gray-300">
-                <div className="flex items-center font-bold text-[20px] px-4 my-6">
+                <div className="flex items-center gap-10 justify-between font-bold text-[20px] px-4 my-6">
                     <p>Atendimento</p>
+                    <Link to="/admin">Admin</Link>
                 </div>
             </div>
             <div id="startpage" className="p-4 flex flex-col grow w-full gap-4 overflow-y-auto">
