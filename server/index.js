@@ -5,7 +5,7 @@ const io = require('socket.io')(server, {cors: {}});
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: process.env.PORT || 3002 });
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001 
 
 wss.on('connection', (ws) => {
 
@@ -64,4 +64,4 @@ io.on('connection', socket => {
         io.emit('receive_message', { username, message });
     });
 })
-server.listen(PORT, () => console.log('Server is running...'))
+server.listen(PORT, "0.0.0.0", () => console.log('Server is running...'))
