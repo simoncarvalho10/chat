@@ -16,9 +16,6 @@ function App() {
           <Route path="/layout" element={<Layout/>}/>
         </Routes>
       </Router>
-      {
-        /*chatVisibility ? <Chat socket={socket}/> : <Join setSocket={setSocket} setChatVisibility={setChatVisibility}/>*/
-      }
     </div>
 
   )
