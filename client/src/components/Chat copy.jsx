@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from "react";
 import { io } from "socket.io-client";
-//import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { GoPaperAirplane } from "react-icons/go";
 
@@ -8,11 +8,8 @@ export default function Chat({}) {
     const messageRef = useRef()
     const [messageList, setMessageList] = useState([])
     const [typeList, setTypeList] = useState([])
-
-    const PORT = 3001;
-    const hostname = window.location.hostname;
-
-    const SERVER_URL = `http://${hostname}:${PORT}`; 
+    
+    const SERVER_URL = "http://localhost:3001"; 
     
     const socket = useRef(null);
     const ws = useRef(null);
@@ -22,7 +19,7 @@ export default function Chat({}) {
             transports: ["websocket"],
         });
  
-        socket.current.on ('receive_message', data => {
+        socket.current.on ('receive_message', (data) => {
             if (data.username != "Cliente") {
                 //alert("username: "+data.username)
                 setTypeList([]); 
@@ -30,46 +27,52 @@ export default function Chat({}) {
             setMessageList((current) => [...current, data])
         })
 
-        socket.current.on ('typing', data => {
-            if (data.username != "Cliente") {
-                setTypeList(() => [data])
-                scrollToEnd();
-            }
-        })        
-
         return () => {
             socket.current.off('receive_message')
-            socket.current.off('typing')
         };
     })
 
-    useEffect(() => {
-        if (typeList.some(message => message.lengthTxt === 0)) {
-            setTypeList([]); 
-        }
-    }, [typeList]);	
-							
-	useEffect(() => {
-        setTypeList([]);
-    }, [messageList]);  													 
+    useEffect(() => {    
+        ws.current = new WebSocket(SERVER_URL);
 
-    const ChangeHandleSubmit = () => {
+        ws.current.onmessage = (event) => {
+            const response = JSON.parse(event.data); 
+
+            if (response.event === 'typing_message') {
+                const vUsername = response.data?.username;
+                if (vUsername != "Cliente"){
+                    setTypeList(() => [response.data])
+                }
+            } 
+        } 
+    });
+
+    useEffect(() => {
+        if (typeList.some(message => message.count === 0)) {
+            alert("Limpar..")
+            setTypeList([]);
+        }
+    }, [typeList]);    
+
+    useEffect(() => {
+        setTypeList([]);
+    }, [messageList]);  
+
+    const sendToServer = () => {
         const message = messageRef.current.value
-        const username = 'Cliente'
- 
-        socket.current.emit('typing', {
-            username, 
-            message
-        });   
-       
-    }    
+        const data = {
+            username: 'Cliente',
+            message: message
+        }
+        ws.current.send(JSON.stringify(data));
+    }
 
     const handleSubmit = () => {
-        
         const message = messageRef.current.value
         const username = 'Cliente'
         
         if (!message.trim()) return; 
+        //alert("Enviando..")
         socket.current.emit('message', {
             username, 
             message
@@ -78,7 +81,7 @@ export default function Chat({}) {
         clearInput();
         
     }
-   
+
     function scrollToEnd() {
         const vTopPage = document.getElementById("startpage")
 
@@ -86,7 +89,7 @@ export default function Chat({}) {
           top: vTopPage.scrollHeight,
           behavior: 'smooth'
         });
-      }
+    }    
 
     const getEnterKey = (e) => {
         if (e.key ==='Enter')
@@ -106,29 +109,26 @@ export default function Chat({}) {
     ];
     const mes = nomesMeses[dataAtual.getMonth()];
     const ano = dataAtual.getFullYear();
-    
     const horas = String(dataAtual.getHours()).padStart(2, '0');
     const minutos = String(dataAtual.getMinutes()).padStart(2, '0');
     const horaAtual = `${horas}:${minutos}`;
-    
     const fullDate = `${mes} ${dia}, ${ano}, ${horaAtual}`
     
-    console.log('Data e hora: ',fullDate) 	
-
     return (
         <div className='flex flex-col w-full h-screen'>
             <div className="w-full bg-gray-100 border-b-2 border-gray-300">
-                <div className="flex items-center font-bold text-[20px] px-4 my-6">
+                <div className="flex items-center gap-10 justify-between font-bold text-[20px] px-4 my-6">
                     <p>Atendimento</p>
+                    <Link to="/admin">Admin</Link>
                 </div>
             </div>
             <div id="startpage" className="p-4 flex flex-col grow w-full gap-4 overflow-y-auto">
 
+
             {
-                    messageList.map((message, index) => {
-                    const isUserRetorn = message.username === "Cliente";                   
+                messageList.map((message, index) => {
+                    const isUserRetorn = message.username === "Cliente";
                     return(
-	 
                         <div className={`${isUserRetorn ? "flex justify-end" : "flex justify-start"}`}>
                             <div className="max-w-[80%] flex flex-col gap-1">
                                 <p 
@@ -147,10 +147,11 @@ export default function Chat({}) {
                         </div>	
                     )
                 })
-            } 
+            }   
 
             {
                 typeList.map((message, index) =>{
+
                     const isUserRetorn = message.username === "Cliente";
                     
                     return (
@@ -160,12 +161,12 @@ export default function Chat({}) {
                                     key={index}
                                     className={`p-4 shadow-md overflow-hidden break-words ${isUserRetorn ? "text-right  bg-blue-300 rounded-l-3xl rounded-tr-3xl" : "text-left  bg-gray-300 rounded-r-3xl rounded-tl-3xl"} inline-block`}
                                 > 
-                                    <div class="flex p-2 items-center justify-end space-x-2">
+                                    <div class="flex p-2 items-center space-x-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-1s"></span>
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-2s"></span>
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-3s"></span>
                                     </div>
-
+                                    
                                 </p>
                                 <p 
                                     key={index}
@@ -176,15 +177,13 @@ export default function Chat({}) {
                             </div>
                         </div>	
                     )
-                
-
                 })
-            }
+            }             
 
             </div>
             <div className="w-full bg-gray-200 border-t-2 border-gray-300">
                 <div className="flex px-4 my-5 gap-3">
-                    <input type="text" onChange={ChangeHandleSubmit} ref={messageRef} onKeyDown={(e)=>getEnterKey(e)} placeholder="Digite a sua mensagem..." className="bg-gray-200 border border-blue-500 p-2 rounded-full grow" />
+                    <input type="text" onChange={sendToServer} ref={messageRef} onKeyDown={(e)=>getEnterKey(e)} placeholder="Digite a sua mensagem..." className="bg-gray-200 border border-blue-500 p-2 rounded-full grow" />
                     <button onClick={handleSubmit} className="w-[70px] text-blue-500 flex justify-center items-center"><GoPaperAirplane size={40} /></button>
                 </div>
             </div>
@@ -193,3 +192,5 @@ export default function Chat({}) {
     )
 
 }
+
+

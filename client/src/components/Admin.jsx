@@ -1,68 +1,68 @@
 import React, {useRef, useState, useEffect} from "react";
-import io from 'socket.io-client'
+import { io } from "socket.io-client";
+//import { Link } from "react-router-dom";
 
 import { GoPaperAirplane } from "react-icons/go";
 
 export default function Chat({}) {
     const messageRef = useRef()
     const [messageList, setMessageList] = useState([])
-	const [typeList, setTypeList] = useState([])											
-    const socket = useRef(null);
-	const ws = new WebSocket("http://localhost:3002");	
+    const [typeList, setTypeList] = useState([])
     
-    
-	
-	useEffect (() => {
-        socket.current = io.connect("http://localhost:3001");
-        //setTypeList([]);
-        
-        socket.current.on ('receive_message', data => {
+    const PORT = 3001;
+    const hostname = window.location.hostname;
 
+    const SERVER_URL = `http://${hostname}:${PORT}`;  
+    
+    const socket = useRef(null);
+    const ws = useRef(null);
+
+	useEffect (() => {
+        socket.current = io(SERVER_URL, {
+            transports: ["websocket"],
+        });
+ 
+        socket.current.on ('receive_message', data => {
             if (data.username != "Admin") {
                 //alert("username: "+data.username)
                 setTypeList([]); 
             }
-
-
             setMessageList((current) => [...current, data])
         })
 
+        socket.current.on ('typing', data => {
+            if (data.username != "Admin") {
+                setTypeList(() => [data])
+                scrollToEnd();
+            }
+            
+        })        
+
         return () => {
             socket.current.off('receive_message')
+            socket.current.off('typing')
         };
     })
 
-    ws.onmessage = (event) => {
-        const response = JSON.parse(event.data); 
-
-        if (response.event === 'typing_message') {
-            const vUsername = response.data?.username;
-            if (vUsername != "Admin"){
-                setTypeList(() => [response.data])
-            }
-        } 
-    } 
-
     useEffect(() => {
-        if (typeList.some(message => message.count === 0)) {
+        if (typeList.some(message => message.lengthTxt === 0)) {
             setTypeList([]);
         }
     }, [typeList]);												
 							
-	/*useEffect(() => {
+	useEffect(() => {
         setTypeList([]);
-    }, [messageList]);  */														 
+    }, [messageList]);  													 
 
-    const sendToServer = () => {
+    const ChangeHandleSubmit = () => {
         const message = messageRef.current.value
-
-        const data = {
-            username: 'Admin',
-            message: message
-        }
-        
-        ws.send(JSON.stringify(data));
-    }													  
+        const username = 'Admin'
+        //if (!message.trim()) return; 
+        socket.current.emit('typing', {
+            username, 
+            message
+        });        
+    }    
 
     const handleSubmit = () => {
         
@@ -183,7 +183,7 @@ export default function Chat({}) {
             </div>
             <div className="w-full bg-gray-200 border-t-2 border-gray-300">
                 <div className="flex px-4 my-5 gap-3">
-                    <input type="text" onChange={sendToServer} ref={messageRef} onKeyDown={(e)=>getEnterKey(e)} placeholder="Digite a sua mensagem..." className="bg-gray-200 border border-blue-500 p-2 rounded-full grow" />
+                    <input type="text" onChange={ChangeHandleSubmit} ref={messageRef} onKeyDown={(e)=>getEnterKey(e)} placeholder="Digite a sua mensagem..." className="bg-gray-200 border border-blue-500 p-2 rounded-full grow" />
                     <button onClick={handleSubmit} className="w-[70px] text-blue-500 flex justify-center items-center"><GoPaperAirplane size={40} /></button>
                 </div>
             </div>
