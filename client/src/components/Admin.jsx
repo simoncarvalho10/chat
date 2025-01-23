@@ -113,10 +113,19 @@ export default function Chat({}) {
     
     const fullDate = `${mes} ${dia}, ${ano}, ${horaAtual}`
     
-    console.log('Data e hora: ',fullDate) 	
+    console.log('Data e hora: ',fullDate) 
+    
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    window.addEventListener('resize', () => {
+        // Executa o mesmo script de antes
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
 
     return (
-        <div className='flex flex-col w-full h-screen'>
+        <div className='flex flex-col w-full h-screen-dynamic'>
             <div className="w-full bg-gray-100 border-b-2 border-gray-300">
                 <div className="flex items-center font-bold text-[20px] px-4 my-6">
                     <p>Atendimento</p>
