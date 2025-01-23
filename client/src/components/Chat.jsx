@@ -101,9 +101,6 @@ export default function Chat({}) {
         messageRef.current.value = ''
     }
 
-    const alturaVisivel = window.innerHeight;
-    console.log("alturaVisivel: "+alturaVisivel)
-
     console.log("Passou ak..")
 	
     const dataAtual = new Date();
@@ -122,7 +119,7 @@ export default function Chat({}) {
     
     const fullDate = `${mes} ${dia}, ${ano}, ${horaAtual}`
     
-    console.log('Data e hora: ',fullDate) 	
+    console.log('Data e hora: ',fullDate)
 
     return (
         <div className="flex flex-col w-full h-screen">
@@ -132,7 +129,7 @@ export default function Chat({}) {
                     <Link to="/admin">Admin</Link>
                 </div>
             </div>
-            <div id="startpage" className={`p-4 flex flex-col grow w-full gap-4 overflow-y-auto`}>
+            <div id="startpage" className={`p-4 flex flex-col h-[90%] w-full gap-4 overflow-y-auto`}>
 
             {
                     messageList.map((message, index) => {
