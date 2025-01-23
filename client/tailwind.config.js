@@ -3,9 +3,9 @@ export default {
   content: ['./index.html','./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-     /* height: {
-        'screen-dynamic': 'var(--altura-visivel)',
-      },*/
+      height: {
+        'screen-dynamic': 'calc(var(--vh, 1vh) * 100)',
+      },
     },
   },
   plugins: [

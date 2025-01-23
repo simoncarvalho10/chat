@@ -121,15 +121,24 @@ export default function Chat({}) {
     
     console.log('Data e hora: ',fullDate)
 
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    window.addEventListener('resize', () => {
+        // Executa o mesmo script de antes
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+
     return (
-        <div className="flex flex-col w-full h-screen">
+        <div className="flex flex-col w-full h-screen-dynamic">
             <div className="w-full bg-gray-100 border-b-2 border-gray-300">
                 <div className="flex items-center justify-between font-bold text-[20px] px-4 my-6">
                     <p>Atendimento</p>
                     <Link to="/admin">Admin</Link>
                 </div>
             </div>
-            <div id="startpage" className={`p-4 flex flex-col h-[90%] w-full gap-4 overflow-y-auto`}>
+            <div id="startpage" className={`p-4 flex flex-col grow w-full gap-4 overflow-y-auto`}>
 
             {
                     messageList.map((message, index) => {
