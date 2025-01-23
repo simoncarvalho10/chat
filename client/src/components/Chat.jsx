@@ -125,14 +125,14 @@ export default function Chat({}) {
     console.log('Data e hora: ',fullDate) 	
 
     return (
-        <div className='flex flex-col w-full h-screen'>
+        <div className="flex flex-col w-full h-screen">
             <div className="w-full bg-gray-100 border-b-2 border-gray-300">
                 <div className="flex items-center justify-between font-bold text-[20px] px-4 my-6">
                     <p>Atendimento</p>
                     <Link to="/admin">Admin</Link>
                 </div>
             </div>
-            <div id="startpage" className={`h-[${alturaVisivel}px] p-4 flex flex-col grow w-full gap-4 overflow-y-auto`}>
+            <div id="startpage" className={`p-4 flex flex-col grow w-full gap-4 overflow-y-auto`}>
 
             {
                     messageList.map((message, index) => {
@@ -192,7 +192,7 @@ export default function Chat({}) {
             }
 
             </div>
-            <div className="w-full bg-gray-200 border-t-2 border-gray-300">
+            <div className="w-full bg-gray-200 border-t-2 border-gray-300 bottom-0">
                 <div className="flex px-4 my-5 gap-3">
                     <input type="text" onChange={ChangeHandleSubmit} ref={messageRef} onKeyDown={(e)=>getEnterKey(e)} placeholder="Digite a sua mensagem..." className="bg-gray-200 border border-blue-500 p-2 rounded-full grow" />
                     <button onClick={handleSubmit} className="w-[70px] text-blue-500 flex justify-center items-center"><GoPaperAirplane size={40} /></button>
