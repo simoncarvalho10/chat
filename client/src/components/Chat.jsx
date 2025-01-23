@@ -5,6 +5,14 @@ import { Link } from "react-router-dom";
 import { GoPaperAirplane } from "react-icons/go";
 
 export default function Chat({}) {
+
+    function ajustarAlturaVisivel() {
+        const alturaVisivel = window.innerHeight;
+        document.documentElement.style.setProperty('--altura-visivel', `${alturaVisivel}px`);
+    }
+    ajustarAlturaVisivel();
+    window.addEventListener('resize', ajustarAlturaVisivel);
+
     const messageRef = useRef()
     const [messageList, setMessageList] = useState([])
     const [typeList, setTypeList] = useState([])
@@ -123,7 +131,7 @@ export default function Chat({}) {
                     <Link to="/admin">Admin</Link>
                 </div>
             </div>
-            <div id="startpage" className="p-4 flex flex-col grow w-full gap-4 overflow-y-auto">
+            <div id="startpage" className="h-screen-dynamic p-4 flex flex-col grow w-full gap-4 overflow-y-auto">
 
             {
                     messageList.map((message, index) => {

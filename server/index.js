@@ -23,9 +23,10 @@ io.on('connection', (socket) => {
         const { username, message } = data; // Extraindo os valores do evento recebido
         const lengthTxt = message.length 
 
-        //console.log(`Recebido do cliente: ${username}: ${message}: ${lengthTxt}`);
+        
         
         if (lengthTxt <= 1) {
+          console.log(`Send message: ${lengthTxt}`);
           io.emit('typing', { username, lengthTxt, message});
         } 
                 
