@@ -12,15 +12,15 @@ export default function Chat({}) {
     const PORT = 3001;
     const hostname = window.location.hostname;
 
-    const SERVER_URL = `http://${hostname}:${PORT}`; 
+    //const SERVER_URL = `http://${hostname}:${PORT}`; 
+    const SERVER_URL = "https://serverchat-production.up.railway.app/"; 
     
     const socket = useRef(null);
     const ws = useRef(null);
 
 	useEffect (() => {
-        socket.current = io(SERVER_URL, {
-            transports: ["websocket"],
-        });
+        socket.current = io(SERVER_URL);
+        const IoSocket = io(SERVER_URL);
  
         socket.current.on ('receive_message', data => {
             if (data.username != "Cliente") {
@@ -30,7 +30,7 @@ export default function Chat({}) {
             setMessageList((current) => [...current, data])
         })
 
-        socket.current.on ('typing', data => {
+        IoSocket.on ('typing', data => {
             if (data.username != "Cliente") {
                 setTypeList(() => [data])
                 scrollToEnd();

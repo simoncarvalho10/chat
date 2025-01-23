@@ -12,15 +12,14 @@ export default function Chat({}) {
     const PORT = 3001;
     const hostname = window.location.hostname;
 
-    const SERVER_URL = `http://${hostname}:${PORT}`;  
+    //const SERVER_URL = `http://${hostname}:${PORT}`; 
+    const SERVER_URL = "https://serverchat-production.up.railway.app/" 
     
     const socket = useRef(null);
-    const ws = useRef(null);
 
 	useEffect (() => {
-        socket.current = io(SERVER_URL, {
-            transports: ["websocket"],
-        });
+        socket.current = io(SERVER_URL);
+        const IoSocket = io(SERVER_URL);
  
         socket.current.on ('receive_message', data => {
             if (data.username != "Admin") {
@@ -30,7 +29,8 @@ export default function Chat({}) {
             setMessageList((current) => [...current, data])
         })
 
-        socket.current.on ('typing', data => {
+        IoSocket.on ('typing', data => {
+            console.log("Message ON: "+data.lengthTxt)
             if (data.username != "Admin") {
                 setTypeList(() => [data])
                 scrollToEnd();
@@ -45,10 +45,10 @@ export default function Chat({}) {
     })
 
     useEffect(() => {
-        if (typeList.some(message => message.lengthTxt === 0)) {
-            setTypeList([]);
-        }
-    }, [typeList]);												
+            if (typeList.some(message => message.lengthTxt === 0)) {
+                setTypeList([]); 
+            }
+    }, [typeList]);										
 							
 	useEffect(() => {
         setTypeList([]);
@@ -61,7 +61,7 @@ export default function Chat({}) {
         socket.current.emit('typing', {
             username, 
             message
-        });        
+        });    
     }    
 
     const handleSubmit = () => {
@@ -129,16 +129,14 @@ export default function Chat({}) {
                     const isUserRetorn = message.username === "Admin";                   
                     return(
 	 
-                        <div className={`${isUserRetorn ? "flex justify-end" : "flex justify-start"}`}>
+                        <div key={index} className={`${isUserRetorn ? "flex justify-end" : "flex justify-start"}`}>
                             <div className="max-w-[80%] flex flex-col gap-1">
                                 <p 
-                                    key={index}
                                     className={`p-4 shadow-md overflow-hidden break-words ${isUserRetorn ? "text-right  bg-blue-300 rounded-l-3xl rounded-tr-3xl" : "text-left  bg-gray-300 rounded-r-3xl rounded-tl-3xl"} inline-block`}
                                 >
                                     {message.message}
                                 </p>
                                 <p 
-                                    key={index}
                                     className={`${isUserRetorn ? "text-right" : "text-left"} text-sm text-gray-700`}
                                 >
                                     {fullDate}
@@ -151,16 +149,16 @@ export default function Chat({}) {
 
 {
                 typeList.map((message, index) =>{
+                    console.log("length: "+message.message.length)
                     const isUserRetorn = message.username === "Admin";
 
                     return (
-                        <div className={`${isUserRetorn ? "flex justify-end" : "flex justify-start"}`}>
+                        <div key={index} className={`${isUserRetorn ? "flex justify-end" : "flex justify-start"}`}>
                             <div  className="max-w-[80%] flex flex-col gap-1">
                                 <p 
-                                    key={index}
                                     className={`p-4 shadow-md overflow-hidden break-words ${isUserRetorn ? "text-right  bg-blue-300 rounded-l-3xl rounded-tr-3xl" : "text-left  bg-gray-300 rounded-r-3xl rounded-tl-3xl"} inline-block`}
                                 > 
-                                    <div class="flex p-2 items-center justify-end space-x-2">
+                                    <div className="flex p-2 items-center justify-end space-x-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-1s"></span>
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-2s"></span>
                                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-bounce animation-delay-3s"></span>
@@ -168,7 +166,6 @@ export default function Chat({}) {
 
                                 </p>
                                 <p 
-                                    key={index}
                                     className={`${!isUserRetorn} ? "text-right" : "text-left"} text-sm text-gray-700`}
                                 >
                                     {fullDate}
