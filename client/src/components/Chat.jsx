@@ -6,12 +6,8 @@ import { GoPaperAirplane } from "react-icons/go";
 
 export default function Chat({}) {
 
-    function ajustarAlturaVisivel() {
-        const alturaVisivel = window.innerHeight;
-        document.documentElement.style.setProperty('--altura-visivel', `${alturaVisivel}px`);
-    }
-    ajustarAlturaVisivel();
-    window.addEventListener('resize', ajustarAlturaVisivel);
+    
+
 
     const messageRef = useRef()
     const [messageList, setMessageList] = useState([])
@@ -104,6 +100,11 @@ export default function Chat({}) {
     const clearInput = () => {
         messageRef.current.value = ''
     }
+
+    const alturaVisivel = window.innerHeight;
+    console.log("alturaVisivel: "+alturaVisivel)
+
+    console.log("Passou ak..")
 	
     const dataAtual = new Date();
 
@@ -131,7 +132,7 @@ export default function Chat({}) {
                     <Link to="/admin">Admin</Link>
                 </div>
             </div>
-            <div id="startpage" className="h-screen-dynamic p-4 flex flex-col grow w-full gap-4 overflow-y-auto">
+            <div id="startpage" className={`h-[${alturaVisivel}px] p-4 flex flex-col grow w-full gap-4 overflow-y-auto`}>
 
             {
                     messageList.map((message, index) => {
